@@ -6,9 +6,12 @@ def main(folder):
 	veto_files = [
 		"titlepage.xhtml",
 		"imprint.xhtml",
+		"etymology.xhtml", # moby dick
+		"extracts.xhtml",  # moby dick
 		"epigraph.xhtml",
 		"dedication.xhtml",
 		"halftitle.xhtml",
+		"endnotes.xhtml",
 		"colophon.xhtml",
 		"uncopyright.xhtml",
 	]
