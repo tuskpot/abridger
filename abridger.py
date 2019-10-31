@@ -20,15 +20,32 @@ def main(folder):
 		"h2",
 		"h3",
 		"title",
+		"a",
 	]
+	white_space = r" —\n"
 	
 	text = extract_text_from_se_book(folder, veto_files, veto_tags)
-	abridged = abridge_text(text)
+	abridged = abridge_text(text, white_space)
 	
 	print(abridged)
 
-def abridge_text(text):
-	return text
+def abridge_text(text, white_space):
+	pattern = "(.*?[" + white_space + "])(.*)"
+	result = ""
+	while True:
+		match = re.search(pattern, text, re.DOTALL)
+		if match:
+			result += match.group(1)
+			next_pattern = "[" + white_space + "](" + re.escape(match.group(1)) + ")(.*)"
+			next_match = re.search(next_pattern, match.group(2), re.DOTALL)
+			if next_match:
+				text = next_match.group(2)
+			else:
+				text = match.group(2)
+		else:
+			result += text
+			break
+	return result
 
 def extract_text_from_se_book(folder, veto_files, veto_tags):
 	files = get_text_files(folder, veto_files)
