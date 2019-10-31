@@ -8,10 +8,14 @@ def main(folder):
 		"imprint.xhtml",
 		"etymology.xhtml", # moby dick
 		"extracts.xhtml",  # moby dick
+		"preamble.xhtml",     # alice in wonderland
+		"frontispiece.xhtml",
 		"epigraph.xhtml",
 		"dedication.xhtml",
 		"halftitle.xhtml",
 		"endnotes.xhtml",
+		"conclusion.xhtml", # alice in wonderland
+		"loi.xhtml",
 		"colophon.xhtml",
 		"uncopyright.xhtml",
 	]
