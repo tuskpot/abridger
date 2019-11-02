@@ -10,6 +10,7 @@ def main(folder):
 		"extracts.xhtml",  # moby dick
 		"preamble.xhtml",     # alice in wonderland
 		"preface.xhtml",
+		"editors-preface.xhtml", # jeeves stories
 		"introduction.xhtml",
 		"frontispiece.xhtml",
 		"epigraph.xhtml",
