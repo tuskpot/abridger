@@ -9,6 +9,7 @@ def main(folder):
 		"etymology.xhtml", # moby dick
 		"extracts.xhtml",  # moby dick
 		"preamble.xhtml",     # alice in wonderland
+		"preface.xhtml",
 		"frontispiece.xhtml",
 		"epigraph.xhtml",
 		"dedication.xhtml",
