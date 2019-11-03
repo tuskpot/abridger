@@ -2,7 +2,34 @@ import re
 import sys
 import xml.etree.ElementTree as ET
 
-def main(folder):
+class Error(Exception):
+	pass
+
+class InputError(Error):
+	def __init__(self, message):
+		self.message = message
+
+def main(args):
+	
+	action = "abridge"
+	folder = ""
+	for arg in args[1:]:
+		if arg == "--help":
+			print_usage()
+			exit()
+		elif arg == "-f":
+			action = "full text"
+		elif arg[0] == "-":
+			raise(InputError("Unknown argument"))
+		elif folder == "":
+			folder = arg
+		else:
+			raise(InputError("Too many folder parameters"))
+	
+	if folder == "":
+		raise(InputError("Folder parameter is missing"))
+			
+	
 	veto_files = [
 		"titlepage.xhtml",
 		"imprint.xhtml",
@@ -31,10 +58,22 @@ def main(folder):
 	]
 	white_space = r" —\n"
 	
-	text = extract_text_from_se_book(folder, veto_files, veto_tags)
-	abridged = abridge_text(text, white_space)
+	if action in ("abridge", "full text"):
+		text = extract_text_from_se_book(folder, veto_files, veto_tags)
 	
-	print(abridged)
+	if action in ("abridge",):
+		text = abridge_text(text, white_space)
+	
+	print(text)
+
+def print_usage():
+	print("Usage:")
+	print(" python3 abridger.py [-f] <source_folder>")
+	print("   -f  Export the full text of the ebook after removing xml tags")
+	print("   <source_folder>")
+	print("       The location of the Standard Ebooks source folder")
+	print("   --help")
+	print("       Print this usage and exit")
 
 def abridge_text(text, white_space):
 	pattern = "(.*?[" + white_space + "])(.*)"
@@ -67,7 +106,7 @@ def extract_text_from_se_book(folder, veto_files, veto_tags):
 def get_text_files(folder, veto_files):
 	text_folder = folder + "src/epub/text/"
 	content = open(folder + "src/epub/content.opf")
-		
+	
 	files = []
 	for line in content.readlines():
 		match = re.search('<itemref idref="(.*)"/>', line)
@@ -90,6 +129,9 @@ def clean_whitespace(text):
 	text = ' '.join([x for x in text.split(' ') if x != ''])
 	text = '\n'.join([x for x in text.split('\n') if x != ''])
 	return text
-	
 
-main(sys.argv[1])
+try:
+	main(sys.argv)
+except InputError as e:
+	print(e.message)
+	print_usage()
