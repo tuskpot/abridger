@@ -19,6 +19,8 @@ def main(args):
 			exit()
 		elif arg == "-f":
 			action = "full text"
+		elif arg == "-l":
+			action = "list files"
 		elif arg[0] == "-":
 			raise(InputError("Unknown argument"))
 		elif folder == "":
@@ -44,7 +46,7 @@ def main(args):
 		"dedication.xhtml",
 		"halftitle.xhtml",
 		"endnotes.xhtml",
-		"conclusion.xhtml", # alice in wonderland
+		# "conclusion.xhtml", # alice in wonderland, not silas marner
 		"loi.xhtml",
 		"colophon.xhtml",
 		"uncopyright.xhtml",
@@ -58,6 +60,15 @@ def main(args):
 	]
 	white_space = r" —\n"
 	
+	if action in ("list files",):
+		all_files = get_text_files(folder, [])
+		body_files = get_text_files(folder, veto_files)
+		text = ""
+		for file_name in all_files:
+			if file_name not in body_files:
+				text += "# "
+			text += file_name + "\n"
+	
 	if action in ("abridge", "full text"):
 		text = extract_text_from_se_book(folder, veto_files, veto_tags)
 	
@@ -70,6 +81,7 @@ def print_usage():
 	print("Usage:")
 	print(" python3 abridger.py [-f] <source_folder>")
 	print("   -f  Export the full text of the ebook after removing xml tags")
+	print("   -l  List files that will be included in the full text")
 	print("   <source_folder>")
 	print("       The location of the Standard Ebooks source folder")
 	print("   --help")
