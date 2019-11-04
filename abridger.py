@@ -12,15 +12,20 @@ class InputError(Error):
 def main(args):
 	
 	action = "abridge"
+	ignore_punctuation = False
 	folder = ""
 	for arg in args[1:]:
 		if arg == "--help":
 			print_usage()
 			exit()
+		elif arg == "-c":
+			action = "list characters"
 		elif arg == "-f":
 			action = "full text"
 		elif arg == "-l":
 			action = "list files"
+		elif arg == "-p":
+			ignore_punctuation = True
 		elif arg[0] == "-":
 			raise(InputError("Unknown argument"))
 		elif folder == "":
@@ -58,6 +63,10 @@ def main(args):
 		"title",
 		"a",
 	]
+	if ignore_punctuation:
+		punctuation = r"!(),-.:;?‘’“”…"
+	else:
+		punctuation = chr(0)
 	white_space = r" —\n"
 	
 	if action in ("list files",):
@@ -69,37 +78,51 @@ def main(args):
 				text += "# "
 			text += file_name + "\n"
 	
-	if action in ("abridge", "full text"):
+	if action in ("abridge", "full text", "list characters",):
 		text = extract_text_from_se_book(folder, veto_files, veto_tags)
 	
 	if action in ("abridge",):
-		text = abridge_text(text, white_space)
+		text = abridge_text(text, white_space, punctuation)
+	
+	if action in ("list characters",):
+		char_list = get_char_list(text)
+		char_list.sort()
+		char_string = ""
+		for char in char_list:
+			char_string += char
+		text = char_string
 	
 	print(text)
 
 def print_usage():
 	print("Usage:")
-	print(" python3 abridger.py [-f] <source_folder>")
-	print("   -f  Export the full text of the ebook after removing xml tags")
-	print("   -l  List files that will be included in the full text")
+	print(" python3 abridger.py [<options>] <source_folder>")
 	print("   <source_folder>")
 	print("       The location of the Standard Ebooks source folder")
+	print(" Options:")
+	print("   -c  List characters (letters) that appear in the full text")
+	print("   -f  Export the full text of the ebook after removing xml tags")
+	print("   -l  List files that will be included in the full text")
+	print("   -p  Ignore adjacent punctuation when looking for next words")
 	print("   --help")
 	print("       Print this usage and exit")
 
-def abridge_text(text, white_space):
-	pattern = "(.*?[" + white_space + "])(.*)"
+def abridge_text(text, white_space, punctuation):
+	punctuation = re.escape(punctuation)
+	pattern = "([" + punctuation + "]*?)(.*?)([" + punctuation + "]*?[" + white_space + "])(.*)"
 	result = ""
 	while True:
 		match = re.search(pattern, text, re.DOTALL)
 		if match:
-			result += match.group(1)
-			next_pattern = "[" + white_space + "](" + re.escape(match.group(1)) + ")(.*)"
-			next_match = re.search(next_pattern, match.group(2), re.DOTALL)
+			result += match.group(1) + match.group(2)
+			next_pattern = "[" + white_space + "]([" + punctuation + "]*?)(" + re.escape(match.group(2)) + ")([" + punctuation + "]*?[" + white_space + "])(.*)"
+			next_match = re.search(next_pattern, match.group(4), re.DOTALL)
 			if next_match:
-				text = next_match.group(2)
+				result += next_match.group(3)
+				text = next_match.group(4)
 			else:
-				text = match.group(2)
+				result += match.group(3)
+				text = match.group(4)
 		else:
 			result += text
 			break
@@ -135,6 +158,13 @@ def get_deep_text(element, veto_tags):
 			text += get_deep_text(subelement, veto_tags)
 		text += element.tail or ''
 	return text
+
+def get_char_list(text):
+	char_list = []
+	for char in text:
+		if char not in char_list:
+			char_list.append(char)
+	return char_list
 
 def clean_whitespace(text):
 	text = text.replace('\t', '')
