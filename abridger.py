@@ -13,6 +13,8 @@ def main(args):
 	
 	action = "abridge"
 	folder = ""
+	loop_count = 1
+	insert_markers = False
 	for arg in args[1:]:
 		if arg == "--help":
 			print_usage()
@@ -21,6 +23,10 @@ def main(args):
 			action = "full text"
 		elif arg == "-l":
 			action = "list files"
+		elif arg == "-m":
+			insert_markers = True
+		elif arg[:2] == "-r":
+			loop_count = int(arg[2:])
 		elif arg[0] == "-":
 			raise(InputError("Unknown argument"))
 		elif folder == "":
@@ -73,7 +79,7 @@ def main(args):
 		text = extract_text_from_se_book(folder, veto_files, veto_tags)
 	
 	if action in ("abridge",):
-		text = abridge_text(text, white_space)
+		text = abridge_text(text, white_space, loop_count, insert_markers)
 	
 	print(text)
 
@@ -82,26 +88,41 @@ def print_usage():
 	print(" python3 abridger.py [-f] <source_folder>")
 	print("   -f  Export the full text of the ebook after removing xml tags")
 	print("   -l  List files that will be included in the full text")
+	print("   -m  Insert marker characters indicating repeats and non-matches")
+	print("   -rX Repeat the text X times before wrapping up")
 	print("   <source_folder>")
 	print("       The location of the Standard Ebooks source folder")
 	print("   --help")
 	print("       Print this usage and exit")
 
-def abridge_text(text, white_space):
+def abridge_text(text, white_space, loop_count, insert_markers):
 	pattern = "(.*?[" + white_space + "])(.*)"
 	result = ""
+	active_text = text
 	while True:
-		match = re.search(pattern, text, re.DOTALL)
+		match = re.search(pattern, active_text, re.DOTALL)
 		if match:
 			result += match.group(1)
 			next_pattern = "[" + white_space + "](" + re.escape(match.group(1)) + ")(.*)"
 			next_match = re.search(next_pattern, match.group(2), re.DOTALL)
 			if next_match:
-				text = next_match.group(2)
+				active_text = next_match.group(2)
+			elif loop_count > 1:
+				restart_match = re.search(next_pattern, text, re.DOTALL)
+				active_text = restart_match.group(2)
+				if match.group(2) == restart_match.group(2):
+					if insert_markers:
+						result += "↕︎"
+				else:
+					if insert_markers:
+						result += "⋮"
+					loop_count -= 1
 			else:
-				text = match.group(2)
+				if insert_markers:
+					result += "∿"
+				active_text = match.group(2)
 		else:
-			result += text
+			result += active_text
 			break
 	return result
 
