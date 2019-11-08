@@ -103,7 +103,7 @@ def abridge_text(text, white_space, loop_count, insert_markers):
 		match = re.search(pattern, active_text, re.DOTALL)
 		if match:
 			result += match.group(1)
-			next_pattern = "[" + white_space + "](" + re.escape(match.group(1)) + ")(.*)"
+			next_pattern = "(?:^|[" + white_space + "])(" + re.escape(match.group(1)) + ")(.*)"
 			next_match = re.search(next_pattern, match.group(2), re.DOTALL)
 			if next_match:
 				active_text = next_match.group(2)
