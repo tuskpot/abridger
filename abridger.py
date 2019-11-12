@@ -43,8 +43,11 @@ def main(args):
 		"imprint.xhtml",
 		"etymology.xhtml", # moby dick
 		"extracts.xhtml",  # moby dick
+		"foreword.xhtml", # princess of mars
 		"preamble.xhtml",     # alice in wonderland
 		"preface.xhtml",
+		"preface-1.xhtml", # bulfinch's mythology
+		"preface-2.xhtml", # bulfinch's mythology
 		"editors-preface.xhtml", # jeeves stories
 		"introduction.xhtml",
 		"frontispiece.xhtml",
@@ -53,6 +56,8 @@ def main(args):
 		"halftitle.xhtml",
 		"endnotes.xhtml",
 		# "conclusion.xhtml", # alice in wonderland, not silas marner
+		"glossary.xhtml", # bulfinch's mythology
+		"appendix.xhtml", # sartor resartus
 		"loi.xhtml",
 		"colophon.xhtml",
 		"uncopyright.xhtml",
