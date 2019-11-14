@@ -44,6 +44,8 @@ def main(args):
 		"etymology.xhtml", # moby dick
 		"extracts.xhtml",  # moby dick
 		"foreword.xhtml", # princess of mars
+		"note.xhtml",             # 20,000 leagues under the seas
+		"units-of-measure.xhtml", # 20,000 leagues under the seas
 		"preamble.xhtml",     # alice in wonderland
 		"preface.xhtml",
 		"preface-1.xhtml", # bulfinch's mythology
