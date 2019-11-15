@@ -103,21 +103,21 @@ def print_usage():
 	print("       Print this usage and exit")
 
 def abridge_text(text, white_space, loop_count, insert_markers):
-	pattern = "(.*?[" + white_space + "])(.*)"
+	pattern = re.compile("(.*?[" + white_space + "])(.*)", re.DOTALL)
 	result = ""
-	active_text = text
+	start_position = 0
 	while True:
-		match = re.search(pattern, active_text, re.DOTALL)
+		match = pattern.search(text, start_position)
 		if match:
 			result += match.group(1)
-			next_pattern = "(?:^|[" + white_space + "])(" + re.escape(match.group(1)) + ")(.*)"
-			next_match = re.search(next_pattern, match.group(2), re.DOTALL)
+			next_pattern = re.compile("(?:^|[" + white_space + "])(" + re.escape(match.group(1)) + ")(.*)", re.DOTALL)
+			next_match = next_pattern.search(text, match.start(2))
 			if next_match:
-				active_text = next_match.group(2)
+				start_position = next_match.start(2)
 			elif loop_count > 1:
-				restart_match = re.search(next_pattern, text, re.DOTALL)
-				active_text = restart_match.group(2)
-				if match.group(2) == restart_match.group(2):
+				restart_match = next_pattern.search(text, 0, match.start(2))
+				start_position = restart_match.start(2)
+				if match.start(2) == restart_match.start(2):
 					if insert_markers:
 						result += "↕︎"
 				else:
@@ -127,9 +127,9 @@ def abridge_text(text, white_space, loop_count, insert_markers):
 			else:
 				if insert_markers:
 					result += "∿"
-				active_text = match.group(2)
+				start_position = match.start(2)
 		else:
-			result += active_text
+			result += text[start_position:]
 			break
 	return result
 
