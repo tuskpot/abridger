@@ -41,6 +41,7 @@ def main(args):
 	veto_files = [
 		"titlepage.xhtml",
 		"imprint.xhtml",
+		"acknowledgments.xhtml", # book of wonder
 		"etymology.xhtml", # moby dick
 		"extracts.xhtml",  # moby dick
 		"foreword.xhtml", # princess of mars
@@ -70,6 +71,7 @@ def main(args):
 		"h3",
 		"title",
 		"a",
+		"figure",
 	]
 	white_space = r" —\n"
 	
