@@ -15,12 +15,15 @@ def main(args):
 	folder = ""
 	loop_count = 1
 	insert_markers = False
+	loop_until_repeat = False
 	for arg in args[1:]:
 		if arg == "--help":
 			print_usage()
 			exit()
 		elif arg == "-f":
 			action = "full text"
+		elif arg == "-h":
+			loop_until_repeat = True
 		elif arg == "-l":
 			action = "list files"
 		elif arg == "-m":
@@ -88,7 +91,7 @@ def main(args):
 		text = extract_text_from_se_book(folder, veto_files, veto_tags)
 	
 	if action in ("abridge",):
-		text = abridge_text(text, white_space, loop_count, insert_markers)
+		text = abridge_text(text, white_space, loop_count, insert_markers, loop_until_repeat)
 	
 	print(text)
 
@@ -104,11 +107,18 @@ def print_usage():
 	print("   --help")
 	print("       Print this usage and exit")
 
-def abridge_text(text, white_space, loop_count, insert_markers):
+def abridge_text(text, white_space, loop_count, insert_markers, loop_until_repeat):
 	pattern = re.compile("(.*?[" + white_space + "])(.*)", re.DOTALL)
 	result = ""
 	start_position = 0
+	positions = []
 	while True:
+		if loop_until_repeat:
+			loop_count = 99
+			if start_position in positions:
+				break
+			else:
+				positions.append(start_position)
 		match = pattern.search(text, start_position)
 		if match:
 			result += match.group(1)
