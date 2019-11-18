@@ -175,7 +175,7 @@ def get_deep_text(element, veto_tags):
 		text = element.text or ''
 		for subelement in element:
 			text += get_deep_text(subelement, veto_tags)
-		text += element.tail or ''
+	text += element.tail or ''
 	return text
 
 def clean_whitespace(text):
