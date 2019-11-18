@@ -100,6 +100,7 @@ def print_usage():
 	print("Usage:")
 	print(" python3 abridger.py [-f] <source_folder>")
 	print("   -f  Export the full text of the ebook after removing xml tags")
+	print("   -h  Loop through the text until returning to an already visited postition")
 	print("   -l  List files that will be included in the full text")
 	print("   -m  Insert marker characters indicating repeats and non-matches")
 	print("   -rX Repeat the text X times before wrapping up")
